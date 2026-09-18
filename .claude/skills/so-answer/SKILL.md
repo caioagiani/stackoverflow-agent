@@ -1,46 +1,46 @@
 ---
 name: so-answer
-description: Rascunhar uma resposta para uma pergunta do Stack Overflow. Use sempre que o usuário colar um link ou id de pergunta do stackoverflow.com, ou pedir para responder/analisar uma pergunta da comunidade.
+description: Draft an answer to a Stack Overflow question. Use whenever the user pastes a stackoverflow.com question link or id, or asks to answer/analyze a community question.
 ---
 
-# Rascunhar resposta
+# Draft an answer
 
-Entrada: link ou id de uma pergunta. Saída: um rascunho em `drafts/<id>/answer.md` que o usuário aprova antes de publicar.
+Input: a question link or id. Output: a draft in `drafts/<id>/answer.md` that the user approves before posting.
 
-Nunca publique nesta skill. Publicar é a skill `so-publish`, e só com OK explícito do usuário na conversa.
+Never post from this skill. Posting is the `so-publish` skill, and only with an explicit OK from the user in the conversation.
 
-## 1. Puxar a pergunta
+## 1. Pull the question
 
 ```
-npm run question -- <id ou url>
+npm run question -- <id or url>
 ```
 
-Salva `drafts/<id>/question.md` com enunciado, comentários e respostas existentes em markdown.
+Saves `drafts/<id>/question.md` with the body, comments and existing answers as markdown.
 
-## 2. Escolher o caminho
+## 2. Pick the path
 
-Leia `kb/so-rules.md` e escolha um dos quatro, explicitamente:
+Read `kb/so-rules.md` and pick one of the four, explicitly:
 
-| situação | caminho |
+| situation | path |
 | --- | --- |
-| sem resposta, ou as existentes estão erradas | responder |
-| já tem resposta certa e você concorda | `npm run vote -- <answer_id> --yes` e nada mais |
-| resposta certa mas incompleta, e você tem o que falta | upvote + `npm run comment` com o complemento |
-| falta repro, opinativa, duplicata, fechada, ou você não consegue validar | passar |
+| no answers, or the existing ones are wrong | answer |
+| already has a correct answer and you agree | `npm run vote -- <answer_id> --yes` and nothing else |
+| correct answer but incomplete, and you have what's missing | upvote + `npm run comment` with the addition |
+| no repro, opinion-based, duplicate, closed, or you can't validate it | skip |
 
-Se o caminho não for "responder", **diga ao usuário em duas linhas qual é e por quê, e pare**. Não rascunhe por obrigação, e não escreva uma resposta que diria o mesmo que a que já está lá.
+If the path isn't "answer", **tell the user in two lines which one it is and why, then stop**. Don't draft out of obligation, and don't write an answer that would say the same thing as the one already there.
 
-Uma resposta nova só se justifica se for a melhor da página.
+A new answer is only justified if it would be the best on the page.
 
-## 3. Entender de verdade
+## 3. Actually understand it
 
-- Leia `kb/<linguagem>.md` (nodejs, php, python) e procure o sintoma. A maioria das perguntas cai num padrão já mapeado.
-- Use a tool MCP `so_search` para achar a pergunta canônica sobre o assunto. Se for duplicata clara, volte ao passo 2.
-- Confirme comportamento na doc oficial quando a resposta depender de versão. Não confie em memória para flags, nomes de API e defaults.
+- Read `kb/<language>.md` (nodejs, php, python) and look for the symptom. Most questions match a pattern that's already mapped.
+- Use the `so_search` MCP tool to find the canonical question on the subject. If it's a clear duplicate, go back to step 2.
+- Confirm behavior in the official docs whenever the answer depends on a version. Don't trust memory for flags, API names and defaults.
 
-## 4. Testar antes de afirmar
+## 4. Test before claiming
 
-Se dá para rodar, rode. Use o scratchpad da sessão, nunca o diretório do projeto.
+If it can be run, run it. Use the session scratchpad, never the project directory.
 
 ```
 node /tmp/.../repro.mjs
@@ -48,35 +48,35 @@ php /tmp/.../repro.php
 python3 /tmp/.../repro.py
 ```
 
-Reproduza o erro do autor, aplique a correção, confirme que passou. Se não deu para testar, o rascunho diz explicitamente o que não foi testado.
+Reproduce the author's error, apply the fix, confirm it passes. If you couldn't test it, the draft says explicitly what wasn't tested.
 
-## 5. Escrever
+## 5. Write
 
-Abra `kb/voice.md` e siga à risca. O resumo operacional:
+Open `kb/voice.md` and follow it exactly. The operational summary:
 
-- Primeira linha é a causa ou a correção. Sem preâmbulo, sem cumprimento, sem eco do enunciado.
-- Diff mínimo, nomes de variáveis do autor preservados.
-- Sem fecho, sem resumo, sem emoji, sem bullet com negrito na frente.
-- Contrações e frases de tamanhos diferentes.
-- Inglês em `stackoverflow.com`.
+- The first line is the cause or the fix. No preamble, no greeting, no echo of the question.
+- Minimal diff, the author's variable names preserved.
+- No closer, no summary, no emoji, no bullet opening with bold.
+- Contractions, and sentences of different lengths.
+- English on `stackoverflow.com`.
 
-Escreva em `drafts/<id>/answer.md`.
+Write it to `drafts/<id>/answer.md`.
 
-## 6. Checar
+## 6. Check
 
 ```
 npm run publish -- <id> --preview
 ```
 
-Roda o lint anti-LLM e renderiza pelo próprio Stack Overflow sem publicar. Qualquer `BLOQUEIO` significa reescrever — não usar `--force`.
+Runs the anti-LLM lint and renders through Stack Overflow itself without posting. Any `BLOCK` means rewrite — don't use `--force`.
 
-## 7. Entregar ao usuário
+## 7. Hand it to the user
 
-Mostre no terminal, em blocos curtos:
+Show it in the terminal, in short blocks:
 
-1. O rascunho inteiro.
-2. O que foi verificado rodando código, e o que não foi.
-3. Por que essa abordagem e não a alternativa óbvia.
-4. Riscos: voto para fechar, resposta concorrente, premissa do autor sendo contestada.
+1. The whole draft.
+2. What was verified by running code, and what wasn't.
+3. Why this approach and not the obvious alternative.
+4. Risks: close votes, a competing answer, an author's premise being contradicted.
 
-Não publique aqui. Quando ele aprovar — "yes", "publica", "manda" —, execute `npm run publish -- <id> --yes` você mesmo, sem devolver o comando para ele copiar.
+Don't post here. When they approve — "yes", "post it", "send it" — run `npm run publish -- <id> --yes` yourself, without handing the command back for them to copy.

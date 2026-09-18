@@ -8,13 +8,13 @@ const args = process.argv.slice(2);
 const target = args.find((a) => !a.startsWith("--"));
 
 if (!target) {
-  console.error("uso: npm run question -- <id ou url>");
+  console.error("usage: npm run question -- <id or url>");
   process.exit(1);
 }
 
 const id = (target.match(/questions\/(\d+)/) || target.match(/^(\d+)$/) || [])[1];
 if (!id) {
-  console.error("não consegui extrair o id da pergunta");
+  console.error("couldn't pull a question id out of that");
   process.exit(1);
 }
 
@@ -27,7 +27,7 @@ function comments(list = []) {
   return (
     "\n" +
     list
-      .map((c) => `> [comentário +${c.score}] ${c.owner?.display_name || "?"}: ${htmlToText(c.body)}`)
+      .map((c) => `> [comment +${c.score}] ${c.owner?.display_name || "?"}: ${htmlToText(c.body)}`)
       .join("\n")
   );
 }
@@ -37,7 +37,7 @@ const result = await apiGet(`questions/${id}`, { filter });
 const question = result.items[0];
 
 if (!question) {
-  console.error("pergunta não encontrada");
+  console.error("question not found");
   process.exit(1);
 }
 
@@ -62,10 +62,10 @@ lines.push("");
 lines.push(
   `id ${question.question_id} · ${question.tags.join(", ")} · score ${question.score} · ${question.view_count} views · ${when(question.creation_date)}`,
 );
-lines.push(`autor: ${question.owner?.display_name || "?"} (${question.owner?.reputation ?? 0} rep)`);
+lines.push(`author: ${question.owner?.display_name || "?"} (${question.owner?.reputation ?? 0} rep)`);
 lines.push(question.link);
-if (question.closed_date) lines.push(`**FECHADA** em ${when(question.closed_date)}: ${question.closed_reason || ""}`);
-if (question.close_vote_count) lines.push(`votos para fechar: ${question.close_vote_count}`);
+if (question.closed_date) lines.push(`**CLOSED** on ${when(question.closed_date)}: ${question.closed_reason || ""}`);
+if (question.close_vote_count) lines.push(`close votes: ${question.close_vote_count}`);
 lines.push("");
 lines.push("---");
 lines.push("");
@@ -75,11 +75,11 @@ lines.push(comments(byPost.get(question.question_id)));
 lines.push("");
 lines.push(`---`);
 lines.push("");
-lines.push(`## ${answers.length} resposta(s) existente(s)`);
+lines.push(`## ${answers.length} existing answer(s)`);
 for (const answer of answers) {
   lines.push("");
   lines.push(
-    `### resposta ${answer.answer_id} · score ${answer.score}${answer.is_accepted ? " · ACEITA" : ""} · ${answer.owner?.display_name || "?"}`,
+    `### answer ${answer.answer_id} · score ${answer.score}${answer.is_accepted ? " · ACCEPTED" : ""} · ${answer.owner?.display_name || "?"}`,
   );
   lines.push("");
   lines.push(decodeEntities(answer.body_markdown));
@@ -92,5 +92,5 @@ mkdirSync(dir, { recursive: true });
 writeFileSync(join(dir, "question.md"), markdown);
 
 console.log(markdown);
-console.error(`\n---\nsalvo em drafts/${id}/question.md`);
-console.error(`rascunhe em drafts/${id}/answer.md e rode: npm run publish -- ${id} --preview`);
+console.error(`\n---\nsaved to drafts/${id}/question.md`);
+console.error(`draft it in drafts/${id}/answer.md and run: npm run publish -- ${id} --preview`);

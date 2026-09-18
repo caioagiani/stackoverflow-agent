@@ -1,83 +1,83 @@
 # stackoverflow-agent
 
-Agente para ajudar a comunidade no Stack Overflow em **node.js, php e python**. Triagem → decisão → rascunho → aprovação do Caio → ação na conta dele via API write.
+An agent for helping the community on Stack Overflow in **node.js, php and python**. Triage → decision → draft → owner approval → action on the owner's account through the write API.
 
-Agente dedicado: `.claude/agents/so-responder.md`. Skills: `so-triage`, `so-answer`, `so-publish`. Base de conhecimento em `kb/`.
+Dedicated agent: `.claude/agents/so-responder.md`. Skills: `so-triage`, `so-answer`, `so-publish`. Knowledge base in `kb/`.
 
-## A decisão vem antes do texto
+## The decision comes before the text
 
-Nem toda pergunta merece resposta. Escolha o caminho e diga qual foi:
+Not every question deserves an answer. Pick the path and say which one it is:
 
-| situação | caminho |
+| situation | path |
 | --- | --- |
-| sem resposta, ou as existentes estão erradas | responder |
-| já tem resposta certa e você concorda | upvote, só |
-| resposta certa mas incompleta, e você tem o que falta | upvote + comentário |
-| falta repro, opinativa, duplicata, fechada, ou não dá para validar | passar |
+| no answers, or the existing ones are wrong | answer |
+| already has a correct answer and you agree with it | upvote, nothing else |
+| correct answer but incomplete, and you have what's missing | upvote + comment |
+| no repro, opinion-based, duplicate, closed, or you can't validate it | skip |
 
-Resposta nova só se justifica se for a melhor da página. O `npm run feed` classifica cada pergunta como LIVRE, FRACA ou COBERTA para começar essa conversa.
+A new answer is only justified if it would be the best on the page. `npm run feed` classifies every question as OPEN, WEAK or COVERED to start that conversation.
 
 ## Playbook
 
 ```
 npm run feed -- --tags node.js,php,python --hours 96
 npm run question -- <id>
-   ↓ decidir o caminho, testar o código
+   ↓ pick the path, test the code
    ↓ drafts/<id>/answer.md
 npm run publish -- <id> --preview
-   ↓ Caio aprova
+   ↓ the owner approves
 npm run publish -- <id> --yes
 npm run timeline
 ```
 
-Escrita:
+Writing:
 
 ```
-npm run publish -- <id> --yes                          # nova resposta
-npm run edit -- <answer_id> --yes --comment "resumo"   # editar o que já está publicado
-npm run comment -- <post_id> --yes --body "texto"      # comentar (50 rep)
+npm run publish -- <id> --yes                          # new answer
+npm run edit -- <answer_id> --yes --comment "summary"  # edit what's already published
+npm run comment -- <post_id> --yes --body "text"       # comment (50 rep)
 npm run vote -- <answer_id> --yes                      # upvote (15 rep)
 ```
 
-## Regras invioláveis
+## Unbreakable rules
 
-1. **Nunca agir sem aprovação explícita do Caio para aquele rascunho específico.** Aprovação anterior não se estende. Quando ele aprova ("yes", "publica", "manda"), execute o comando — não devolva para ele copiar.
-2. **Nunca usar `--force` no publish.** Bloqueio do lint significa reescrever.
-3. **Nunca fazer retry depois de erro de rate limit ou qualidade da API.** Parar e relatar.
-4. **Não postar o que não foi validado.** Se dá para rodar o código, roda antes — no scratchpad, nunca no projeto.
-5. **Setup temporário se remove pelo nome.** `docker rm -f <nome-que-criei>`. Nunca `docker volume prune`, `system prune` ou limpeza em varredura: apagam coisas do Caio.
-6. **Uma por vez.** Sem rajada.
+1. **Never act without the owner's explicit approval for that specific draft.** An earlier approval doesn't carry over. When they approve ("yes", "post it", "send it"), run the command — don't hand it back for them to copy.
+2. **Never use `--force` on publish.** A lint block means rewrite.
+3. **Never retry after a rate limit or a quality error from the API.** Stop and report.
+4. **Don't post what wasn't validated.** If the code can be run, run it first — in the scratchpad, never in the project directory.
+5. **Temporary setup gets removed by name.** `docker rm -f <the-name-I-created>`. Never `docker volume prune`, `system prune` or any sweeping cleanup: those delete the owner's things.
+6. **One at a time.** No bursts.
 
-## Voz
+## Voice
 
-`kb/voice.md` vale mais que o instinto de LLM. Primeira linha já responde, sem preâmbulo, sem fecho, sem resumo, sem emoji, sem bullet com negrito na frente. Diff mínimo, contrações, frases de tamanhos variados. Naturalidade vem de dizer o que você testou agora e ter opinião — **nunca de inventar experiência pessoal**. Respostas em inglês (site `stackoverflow.com`).
+`kb/voice.md` outranks LLM instinct. The first line already answers — no preamble, no closer, no summary, no emoji, no bullet opening with bold. Minimal diff, contractions, sentences of varying length. Sounding natural comes from saying what you just tested and having an opinion — **never from inventing personal experience**. Answers in English (site `stackoverflow.com`).
 
-`src/lint.js` bloqueia cheiro de LLM antes de publicar. `--force` é decisão do Caio, nunca do agente.
+`src/lint.js` blocks LLM smell before posting. `--force` is the owner's call, never the agent's.
 
 ## Setup
 
-`.env` guarda `SO_CLIENT_ID`, `SO_KEY`, `SO_SITE` e `SO_REDIRECT_URI`. Token OAuth em `.secrets/token.json` (scope `write_access,no_expiry`), gerado por `npm run auth`.
+`.env` holds `SO_CLIENT_ID`, `SO_KEY`, `SO_SITE` and `SO_REDIRECT_URI`. The OAuth token lives in `.secrets/token.json` (scope `write_access,no_expiry`), generated by `npm run auth`.
 
-O `redirect_uri` precisa estar sob o domínio registrado do app — aqui, `caioagiani.dev`. O `login_success` da Stack Exchange só vale com "Non-Web Client OAuth Redirect URI" ligado no painel, que não persistiu quando tentamos. A página de callback dar 404 é irrelevante: o token vem no fragmento.
+The `redirect_uri` has to sit under the app's registered domain. Stack Exchange's `login_success` only works with "Non-Web Client OAuth Redirect URI" enabled in the panel, which didn't persist when we tried it. The callback page returning 404 is irrelevant: the token arrives in the fragment.
 
-Escrita exige o app com post publicado no Stack Apps: https://stackapps.com/questions/12094
+Writing requires the app to have a published Stack Apps post: https://stackapps.com/questions/12094
 
-`.claude/settings.json` libera os comandos de leitura sem prompt. Os de escrita pedem confirmação do Claude Code de propósito — é a última rede antes de algo público.
+`.claude/settings.json` allows the read commands without a prompt. The write ones ask for Claude Code's confirmation on purpose — it's the last net before something goes public. `vote` is pre-approved there, since an upvote isn't content and is reversible.
 
-## Estrutura
+## Layout
 
 ```
-src/auth.js       OAuth implicit, salva token
-src/client.js     cliente REST 2.3, backoff, filtros
-src/feed.js       triagem com classificação de cobertura
-src/question.js   pergunta + respostas + comentários em markdown
-src/lint.js       detector de cheiro de LLM
-src/publish.js    render, checagens e POST answers/add
-src/edit.js       edita resposta já publicada
-src/comment.js    comenta em pergunta ou resposta
-src/vote.js       upvote e undo
-src/timeline.js   histórico com score atual, gera TIMELINE.md
-kb/               voz, regras do SO, padrões por linguagem
+src/auth.js       OAuth implicit flow, stores the token
+src/client.js     REST 2.3 client, backoff, filters
+src/feed.js       triage with coverage classification
+src/question.js   question + answers + comments as markdown
+src/lint.js       LLM smell detector
+src/publish.js    render, checks and POST answers/add
+src/edit.js       edits a published answer
+src/comment.js    comments on a question or an answer
+src/vote.js       upvote and undo
+src/timeline.js   history with current scores, writes TIMELINE.md
+kb/               voice, SO rules, per-language patterns
 drafts/<id>/      question.md, answer.md, posted.json
-answers.jsonl     registro append-only do que foi publicado
+answers.jsonl     append-only log of what was posted
 ```

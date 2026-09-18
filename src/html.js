@@ -14,7 +14,7 @@ const NAMED = {
   rdquo: "”",
 };
 
-// A API devolve body_markdown com entidades HTML escapadas.
+// The API returns body_markdown with HTML entities escaped.
 export function decodeEntities(text = "") {
   return text
     .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
@@ -22,7 +22,7 @@ export function decodeEntities(text = "") {
     .replace(/&([a-z]+);/gi, (match, name) => NAMED[name.toLowerCase()] ?? match);
 }
 
-// Comentários só vêm em HTML: comment.body_markdown existe no filtro mas a API nunca o retorna.
+// Comments only come as HTML: comment.body_markdown exists in the filter but the API never returns it.
 export function htmlToText(html = "") {
   return decodeEntities(
     html

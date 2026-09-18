@@ -20,8 +20,8 @@ export const config = {
   clientId: process.env.SO_CLIENT_ID || "",
   key: process.env.SO_KEY || "",
   site: process.env.SO_SITE || "stackoverflow",
-  // Precisa estar sob o domínio registrado do app. O login_success da Stack Exchange
-  // só é aceito com "Non-Web Client OAuth Redirect URI" ligado no painel.
+  // Must live under the app's registered domain. Stack Exchange's login_success
+  // is only accepted with "Non-Web Client OAuth Redirect URI" enabled in the dashboard.
   redirectUri: process.env.SO_REDIRECT_URI || "https://stackexchange.com/oauth/login_success",
 };
 
@@ -43,11 +43,11 @@ export function writeToken(token) {
 export function requireToken() {
   const token = readToken();
   if (!token) {
-    console.error("Sem token. Rode: npm run auth");
+    console.error("no token. run: npm run auth");
     process.exit(1);
   }
   if (token.expired) {
-    console.error("Token expirado. Rode: npm run auth");
+    console.error("token expired. run: npm run auth");
     process.exit(1);
   }
   return token.access_token;

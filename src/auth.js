@@ -8,19 +8,19 @@ const SCOPE = "write_access,no_expiry";
 
 async function status() {
   const token = readToken();
-  if (!token) return console.error("Sem token. Rode: npm run auth");
-  if (token.expired) return console.error("Token expirado. Rode: npm run auth");
+  if (!token) return console.error("no token. run: npm run auth");
+  if (token.expired) return console.error("token expired. run: npm run auth");
 
   const me = await apiGet("me", { access_token: token.access_token, filter: "default" });
   const user = me.items[0];
-  if (!user) return console.error("Token válido, mas sem conta no site " + config.site);
+  if (!user) return console.error("token is valid, but there's no account on site " + config.site);
   console.log(`${user.display_name} — ${user.reputation} rep — ${user.link}`);
-  console.log(`escopo: ${token.scope} · quota ${me.quota_remaining}/${me.quota_max}`);
+  console.log(`scope: ${token.scope} · quota ${me.quota_remaining}/${me.quota_max}`);
 }
 
 async function login() {
   if (!config.clientId) {
-    console.error("Falta SO_CLIENT_ID no .env");
+    console.error("SO_CLIENT_ID missing from .env");
     process.exit(1);
   }
 
@@ -29,11 +29,11 @@ async function login() {
   url.searchParams.set("scope", SCOPE);
   url.searchParams.set("redirect_uri", REDIRECT);
 
-  console.log("\n1. Abra e autorize:\n");
+  console.log("\n1. open and authorize:\n");
   console.log(url.toString());
-  console.log(`\n2. Você será redirecionado para ${REDIRECT}#access_token=...`);
-  console.log("   A página pode dar 404. Tudo bem: o token está na barra de endereço.");
-  console.log("3. Copie a URL inteira e cole aqui.\n");
+  console.log(`\n2. you'll be redirected to ${REDIRECT}#access_token=...`);
+  console.log("   the page may 404. that's fine: the token is in the address bar.");
+  console.log("3. copy the whole URL and paste it here.\n");
 
   spawn("open", [url.toString()], { stdio: "ignore", detached: true }).unref();
 
@@ -45,12 +45,12 @@ async function login() {
   const accessToken = params.get("access_token") || (/^[\w()*.-]+$/.test(pasted) ? pasted : null);
 
   if (!accessToken) {
-    console.error("\nNão achei access_token aí.");
+    console.error("\nno access_token in there.");
     if (pasted.includes("/oauth/dialog")) {
-      console.error("Você colou a URL do passo 1. Preciso da URL depois de autorizar.");
+      console.error("that's the URL from step 1. I need the URL you land on after authorizing.");
     }
-    console.error("Se a autorização falhou com erro de redirect_uri, confira SO_REDIRECT_URI no .env:");
-    console.error(`atual: ${REDIRECT}`);
+    console.error("if authorization failed with a redirect_uri error, check SO_REDIRECT_URI in .env:");
+    console.error(`current: ${REDIRECT}`);
     process.exit(1);
   }
 
@@ -62,7 +62,7 @@ async function login() {
     created_at: new Date().toISOString(),
   });
 
-  console.log(`\nToken salvo em ${path}\n`);
+  console.log(`\ntoken saved to ${path}\n`);
   await status();
 }
 

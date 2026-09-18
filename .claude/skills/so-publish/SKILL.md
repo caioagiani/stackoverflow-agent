@@ -1,47 +1,47 @@
 ---
 name: so-publish
-description: Executar ações públicas no Stack Overflow na conta do Caio — publicar resposta, editar resposta existente, comentar ou dar upvote. Use somente quando ele aprovar explicitamente a ação.
+description: Perform public actions on Stack Overflow on the owner's account — post an answer, edit an existing answer, comment or upvote. Use only when they explicitly approve the action.
 ---
 
-# Agir na conta do Caio
+# Acting on the owner's account
 
-Tudo aqui é público e sai com o nome dele. Dá para apagar, mas o histórico fica e a reputação já aconteceu.
+Everything here is public and goes out under their name. It can be deleted, but the history stays and the reputation already happened.
 
-## Pré-requisitos, todos obrigatórios
+## Prerequisites, all mandatory
 
-1. O Caio aprovou **esta ação específica** nesta conversa. Aprovação de um rascunho anterior não vale para o próximo.
-2. `npm run me` retorna a conta certa.
-3. Para resposta: `npm run publish -- <id> --preview` rodou e o lint saiu sem `BLOQUEIO`.
-4. A pergunta não está fechada (o script checa de novo antes de postar).
+1. The owner approved **this specific action** in this conversation. Approval of an earlier draft doesn't carry to the next one.
+2. `npm run me` returns the right account.
+3. For an answer: `npm run publish -- <id> --preview` ran and the lint came out with no `BLOCK`.
+4. The question isn't closed (the script checks again before posting).
 
-Se algum item falhar, pare e diga qual.
+If any item fails, stop and say which one.
 
-## Comandos
+## Commands
 
 ```
-npm run publish -- <id> --yes                          # nova resposta
-npm run edit -- <answer_id> --yes --comment "resumo"   # editar resposta publicada
-npm run comment -- <post_id> --yes --body "texto"      # comentar (50 rep, 600 chars)
+npm run publish -- <id> --yes                          # new answer
+npm run edit -- <answer_id> --yes --comment "summary"  # edit a published answer
+npm run comment -- <post_id> --yes --body "text"       # comment (50 rep, 600 chars)
 npm run vote -- <answer_id> --yes                      # upvote (15 rep)
-npm run vote -- <id> --question --yes                  # upvote na pergunta
+npm run vote -- <id> --question --yes                  # upvote the question
 ```
 
-Quando ele aprova em linguagem natural — "yes", "publica", "manda", "pode ir" —, **execute o comando você mesmo**. Não devolva o comando para ele copiar; ele já aprovou.
+When they approve in natural language — "yes", "post it", "send it", "go ahead" — **run the command yourself**. Don't hand the command back for them to copy; they already approved.
 
-`--yes` reflete a aprovação dele, não a sua conveniência. Sem aprovação na conversa, não rode.
+`--yes` reflects their approval, not your convenience. Without approval in the conversation, don't run it.
 
-Nunca use `--force`. Ele existe para o Caio decidir sozinho, não para o agente contornar o lint.
+Never use `--force`. It exists for the owner to decide on their own, not for the agent to route around the lint.
 
-## Escolher a ação certa
+## Picking the right action
 
-Antes de publicar resposta nova, confirme que ela seria a melhor da página. Se a pergunta já tem resposta correta, o caminho é upvote, ou upvote + comentário quando você tem um complemento real. Ver `kb/so-rules.md`.
+Before posting a new answer, confirm it would be the best on the page. If the question already has a correct answer, the path is upvote, or upvote + comment when you have a real addition. See `kb/so-rules.md`.
 
-## Depois
+## Afterwards
 
-- O link vai para `drafts/<id>/posted.json` e `answers.jsonl`. Rode `npm run timeline` e mostre ao Caio.
-- Se a API recusar por qualidade ou velocidade: **não tente de novo**. Relate e pare. Retry em loop é o padrão que o Stack Overflow trata como abuso.
-- Lembre o Caio de acompanhar os comentários nas horas seguintes. Feedback do autor vira edição, não uma resposta nova.
+- The link goes to `drafts/<id>/posted.json` and `answers.jsonl`. Run `npm run timeline` and show the owner.
+- If the API refuses on quality or rate: **don't try again**. Report and stop. Retrying in a loop is the pattern Stack Overflow treats as abuse.
+- Remind the owner to follow the comments over the next few hours. Feedback from the author becomes an edit, not a new answer.
 
-## Ritmo
+## Pace
 
-Volume baixo, qualidade alta. Várias ações em sequência curta chamam revisão automática. Se ele pedir uma rajada, avise uma vez.
+Low volume, high quality. Several actions in quick succession invite automated review. If they ask for a burst, say so once.

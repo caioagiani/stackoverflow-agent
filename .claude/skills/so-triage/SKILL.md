@@ -1,40 +1,40 @@
 ---
 name: so-triage
-description: Encontrar perguntas do Stack Overflow que valem resposta, filtrando por tags (node.js, php, python) e janela de tempo. Use quando o usuário pedir para procurar perguntas novas, achar o que responder, ou varrer o feed.
+description: Find Stack Overflow questions worth answering, filtered by tags (node.js, php, python) and a time window. Use when the user asks to look for new questions, find something to answer, or sweep the feed.
 ---
 
-# Triagem
+# Triage
 
-Achar poucas perguntas boas, não muitas perguntas.
+Find a few good questions, not many questions.
 
-## Buscar
+## Search
 
 ```
 npm run feed -- --tags node.js,php,python --hours 12 --max 15
 npm run feed -- --tags node.js --hours 6 --unanswered
-npm run feed -- --search "texto livre"
+npm run feed -- --search "free text"
 ```
 
-O feed já descarta fechadas, respondidas e com 3+ respostas, e ordena por views por resposta — proxy de "muita gente com esse problema e ninguém resolveu".
+The feed already drops closed questions, answered ones and anything with 3+ answers, and sorts by views per answer — a proxy for "lots of people have this problem and nobody solved it".
 
-O feed marca cada pergunta:
+The feed tags each question:
 
-- **LIVRE** — ninguém respondeu
-- **FRACA** — só respostas com 0 ou negativo
-- **COBERTA** — tem resposta aceita ou com +2
+- **OPEN** — nobody answered
+- **WEAK** — only answers at 0 or negative
+- **COVERED** — has an accepted answer or one at +2
 
-## Filtrar de verdade
+## Actually filter
 
-Das candidatas, leia os títulos e escolha no máximo 5 aplicando `kb/so-rules.md`:
+From the candidates, read the titles and pick at most 5, applying `kb/so-rules.md`:
 
-- Tem erro específico e código no enunciado?
-- Você conseguiria testar a correção localmente?
-- Cai em algum padrão já mapeado em `kb/nodejs.md`, `kb/php.md`, `kb/python.md`?
+- Is there a specific error and code in the body?
+- Could you test the fix locally?
+- Does it match a pattern already mapped in `kb/nodejs.md`, `kb/php.md`, `kb/python.md`?
 
-Descarte sem dó: opinativas, sem repro, dump de tarefa, "qual é melhor", pedido de biblioteca.
+Discard without mercy: opinion-based, no repro, assignment dumps, "which is better", library requests.
 
-**COBERTA não é descarte automático, e também não é convite para responder.** Abra a resposta existente com `npm run question -- <id>` e decida: se ela resolve, o caminho é upvote; se falta algo que você tem, é upvote + comentário; se está errada, aí vale resposta. Nunca proponha uma resposta que diria o mesmo que a de cima.
+**COVERED is not an automatic discard, and it's not an invitation to answer either.** Open the existing answer with `npm run question -- <id>` and decide: if it solves the problem, the path is upvote; if something you have is missing, it's upvote + comment; if it's wrong, then an answer is warranted. Never propose an answer that would say the same thing as the one above it.
 
-## Apresentar
+## Present
 
-Uma linha por candidata: id, título curto, o caminho sugerido (responder / complementar / upvote / passar) e **por quê** em meia linha. Depois pergunte em qual trabalhar. Não rascunhe várias de uma vez.
+One line per candidate: id, short title, the suggested path (answer / add a comment / upvote / skip) and **why** in half a line. Then ask which one to work on. Don't draft several at once.

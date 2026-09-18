@@ -10,7 +10,7 @@ const args = process.argv.slice(2);
 function arg(name, fallback) {
   const index = args.indexOf(`--${name}`);
   if (index === -1) return fallback;
-  // junta até a próxima flag: npm run pode desmontar aspas de valores com espaço
+  // joins up to the next flag: npm run can strip quotes off values with spaces
   const rest = [];
   for (let i = index + 1; i < args.length && !args[i].startsWith("--"); i++) rest.push(args[i]);
   return rest.length ? rest.join(" ") : fallback;
@@ -18,7 +18,7 @@ function arg(name, fallback) {
 
 const target = args.find((a) => !a.startsWith("--") && /^\d+$/.test(a));
 if (!target) {
-  console.error('uso: npm run edit -- <answer_id> [--file caminho] [--comment "resumo"] [--preview] [--yes]');
+  console.error('usage: npm run edit -- <answer_id> [--file path] [--comment "summary"] [--preview] [--yes]');
   process.exit(1);
 }
 
@@ -29,19 +29,19 @@ const entry = log.find((e) => String(e.answer_id) === target);
 
 const file = arg("file", entry ? join(ROOT, "drafts", String(entry.question_id), "answer.md") : null);
 if (!file || !existsSync(file)) {
-  console.error(`rascunho não encontrado: ${file || "(sem --file e sem registro em answers.jsonl)"}`);
+  console.error(`draft not found: ${file || "(no --file and no record in answers.jsonl)"}`);
   process.exit(1);
 }
 
 const body = readFileSync(file, "utf8").trim();
 const summary = arg("comment", "");
 
-console.log(`resposta ${target} · ${body.length} chars · ${file}\n`);
+console.log(`answer ${target} · ${body.length} chars · ${file}\n`);
 const { blocked } = report(lint(body));
 console.log("");
 
 if (blocked && !args.includes("--force")) {
-  console.error("bloqueado pelo lint. Reescreva.");
+  console.error("blocked by lint. rewrite it.");
   process.exit(1);
 }
 
@@ -49,10 +49,10 @@ const accessToken = requireToken();
 
 const current = await apiGet(`answers/${target}`, { filter: "default" });
 if (!current.items[0]) {
-  console.error("resposta não encontrada");
+  console.error("answer not found");
   process.exit(1);
 }
-console.log(`score atual: ${current.items[0].score} · aceita: ${current.items[0].is_accepted}`);
+console.log(`current score: ${current.items[0].score} · accepted: ${current.items[0].is_accepted}`);
 
 if (args.includes("--preview")) {
   const result = await apiPost(
@@ -62,20 +62,20 @@ if (args.includes("--preview")) {
   );
   console.log("\n--- preview ---\n");
   console.log(result.items[0].body);
-  console.log("\nnada foi editado.");
+  console.log("\nnothing was edited.");
   process.exit(0);
 }
 
 if (!args.includes("--yes")) {
   if (!process.stdin.isTTY) {
-    console.error("\nsem terminal interativo para confirmar. Repita o comando com --yes.");
+    console.error("\nno interactive terminal to confirm in. repeat the command with --yes.");
     process.exit(1);
   }
   const rl = createInterface({ input: process.stdin, output: process.stdout });
-  const confirm = await rl.question('digite "editar" para confirmar: ');
+  const confirm = await rl.question('type "edit" to confirm: ');
   rl.close();
-  if (confirm.trim().toLowerCase() !== "editar") {
-    console.log("cancelado");
+  if (confirm.trim().toLowerCase() !== "edit") {
+    console.log("canceled");
     process.exit(0);
   }
 }
@@ -83,8 +83,8 @@ if (!args.includes("--yes")) {
 try {
   const result = await apiPost(`answers/${target}/edit`, { body, comment: summary }, accessToken);
   const answer = result.items[0];
-  console.log(`\neditada: ${decodeEntities(answer.link || `answer ${answer.answer_id}`)}`);
+  console.log(`\nedited: ${decodeEntities(answer.link || `answer ${answer.answer_id}`)}`);
 } catch (error) {
-  console.error(`\nfalhou: ${error.message}`);
+  console.error(`\nfailed: ${error.message}`);
   process.exit(1);
 }

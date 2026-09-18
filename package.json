@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Agente para triar, rascunhar e publicar respostas no Stack Overflow (node.js, php, python)",
+  "description": "Agent to triage, draft and post Stack Overflow answers (node.js, php, python)",
   "engines": {
     "node": ">=20"
   },

@@ -7,7 +7,7 @@ function arg(name, fallback) {
   return index === -1 ? fallback : args[index + 1];
 }
 
-// O volume do SO caiu muito: node.js sozinho rende ~2 perguntas/dia. Janela curta devolve lista vazia.
+// SO volume dropped hard: node.js alone yields ~2 questions/day. A short window returns an empty list.
 const DEFAULT_TAGS = "node.js,php,python,javascript,typescript,express,laravel,django,flask,pandas";
 const tags = (arg("tags", DEFAULT_TAGS) || "").split(",").map((t) => t.trim()).filter(Boolean);
 const hours = Number(arg("hours", 72));
@@ -74,11 +74,11 @@ async function run() {
     .slice(0, max);
 
   if (!candidates.length) {
-    console.log("Nada nesse recorte. Aumente --hours ou troque as tags.");
+    console.log("nothing in this slice. bump --hours or change the tags.");
     return;
   }
 
-  // Quem já tem resposta boa não precisa de outra. Precisa, no máximo, de um upvote.
+  // A question that already has a good answer doesn't need another. At most, it needs an upvote.
   const withAnswers = candidates.filter((q) => q.answer_count > 0).map((q) => q.question_id);
   const best = new Map();
   if (withAnswers.length) {
@@ -101,25 +101,25 @@ async function run() {
   }
 
   function coverage(q) {
-    if (!q.answer_count) return { tag: "LIVRE", hint: "ninguém respondeu" };
+    if (!q.answer_count) return { tag: "OPEN", hint: "nobody answered" };
     const top = best.get(q.question_id);
     if (!top) return { tag: "?", hint: "" };
-    if (top.accepted) return { tag: "COBERTA", hint: `resposta aceita (${top.answer_id}) — só responda se ela estiver errada` };
-    if (top.score >= 2) return { tag: "COBERTA", hint: `resposta com +${top.score} (${top.answer_id}) — considere upvote + comentário` };
-    return { tag: "FRACA", hint: `melhor resposta com ${top.score} (${top.answer_id})` };
+    if (top.accepted) return { tag: "COVERED", hint: `accepted answer (${top.answer_id}) — only answer if it's wrong` };
+    if (top.score >= 2) return { tag: "COVERED", hint: `answer at +${top.score} (${top.answer_id}) — consider upvote + comment` };
+    return { tag: "WEAK", hint: `best answer at ${top.score} (${top.answer_id})` };
   }
 
-  console.log(`${candidates.length} perguntas · site ${config.site} · últimas ${hours}h\n`);
+  console.log(`${candidates.length} questions · site ${config.site} · last ${hours}h\n`);
   for (const q of candidates) {
     const { tag, hint } = coverage(q);
     console.log(`[${q.question_id}] ${tag.padEnd(7)} ${decode(q.title)}`);
     console.log(
-      `   ${q.tags.join(" ")} · ${q.answer_count} resp · ${q.view_count} views · ${age(q.creation_date)} · score ${q.score}`,
+      `   ${q.tags.join(" ")} · ${q.answer_count} answers · ${q.view_count} views · ${age(q.creation_date)} · score ${q.score}`,
     );
     if (hint) console.log(`   ${hint}`);
     console.log(`   ${q.link}\n`);
   }
-  console.log(`Detalhar: npm run question -- <id>`);
+  console.log(`details: npm run question -- <id>`);
 }
 
 await run();

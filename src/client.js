@@ -8,7 +8,7 @@ let backoffUntil = 0;
 async function respectBackoff() {
   const wait = backoffUntil - Date.now();
   if (wait > 0) {
-    console.error(`backoff da API: aguardando ${Math.ceil(wait / 1000)}s`);
+    console.error(`API backoff: waiting ${Math.ceil(wait / 1000)}s`);
     await new Promise((resolve) => setTimeout(resolve, wait));
   }
 }
@@ -27,7 +27,7 @@ function unwrap(payload) {
 export async function apiGet(path, params = {}) {
   await respectBackoff();
   const url = new URL(`${BASE}/${path.replace(/^\//, "")}`);
-  // site: null para métodos que não são por site, como filters/create
+  // site: null for methods that aren't per-site, like filters/create
   const site = params.site === null ? null : params.site || config.site;
   if (site) url.searchParams.set("site", site);
   for (const [name, value] of Object.entries(params)) {
@@ -61,7 +61,7 @@ export async function apiPost(path, fields, accessToken) {
   return unwrap(payload);
 }
 
-// A API só entrega body_markdown com filtro customizado. Cria uma vez e guarda.
+// The API only hands over body_markdown with a custom filter. Create it once and cache it.
 async function createFilter(name, fields) {
   const path = cachePath(`filter-${name}.json`);
   const include = fields.join(";");
@@ -85,12 +85,12 @@ export function markdownFilter() {
   ]);
 }
 
-// comment.body_markdown consta do filtro mas a API nunca o devolve, e o corpo
-// também não vem em comentário aninhado. Só o endpoint dedicado entrega.
+// comment.body_markdown is listed in the filter but the API never returns it, and the body
+// doesn't come through on a nested comment either. Only the dedicated endpoint delivers it.
 export function commentFilter() {
   return createFilter("comment", ["comment.body"]);
 }
 
 export function quotaLine(payload) {
-  return `quota restante: ${payload.quota_remaining}/${payload.quota_max}`;
+  return `quota left: ${payload.quota_remaining}/${payload.quota_max}`;
 }

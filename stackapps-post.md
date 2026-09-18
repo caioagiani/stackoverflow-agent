@@ -1,17 +1,17 @@
-# Texto para publicar em stackapps.com
+# Text to publish on stackapps.com
 
-Publique como pergunta nova em https://stackapps.com/questions/ask, tags: `script` `api` `stackoverflow`.
-Depois cole a URL do post em **Edit details → Stack Apps post** no painel do app.
+Post it as a new question at https://stackapps.com/questions/ask, tags: `script` `api` `stackoverflow`.
+Then paste the post URL into **Edit details → Stack Apps post** in the app panel.
 
 ---
 
-**Título:**
+**Title:**
 
 Answer Drafter — a local CLI I use to draft and post my own Stack Overflow answers
 
 ---
 
-**Corpo:**
+**Body:**
 
 A command line tool I run locally to help me answer questions on Stack Overflow, mostly in the `node.js`, `php` and `python` tags.
 

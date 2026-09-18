@@ -17,36 +17,36 @@ function arg(name) {
 const body = arg("body");
 const site = arg("site");
 if (!postId || !body) {
-  console.error('uso: npm run comment -- <post_id> --body "texto" [--site stackapps] [--yes]');
+  console.error('usage: npm run comment -- <post_id> --body "text" [--site stackapps] [--yes]');
   process.exit(1);
 }
 
-// Limites do próprio site: comentário tem 600 caracteres e exige 50 de reputação.
+// The site's own limits: a comment caps at 600 characters and needs 50 reputation.
 if (body.length > 600) {
-  console.error(`comentário tem ${body.length} caracteres; o limite é 600`);
+  console.error(`comment is ${body.length} characters; the limit is 600`);
   process.exit(1);
 }
 if (body.length < 15) {
-  console.error("comentário curto demais; o mínimo é 15 caracteres");
+  console.error("comment too short; the minimum is 15 characters");
   process.exit(1);
 }
 
 const accessToken = requireToken();
 
-console.log(`post ${postId} · ${site || "stackoverflow"} · ${body.length}/600 caracteres\n`);
+console.log(`post ${postId} · ${site || "stackoverflow"} · ${body.length}/600 characters\n`);
 console.log(body);
 console.log("");
 
 if (!args.includes("--yes")) {
   if (!process.stdin.isTTY) {
-    console.error("sem terminal interativo para confirmar. Repita com --yes.");
+    console.error("no interactive terminal to confirm in. repeat with --yes.");
     process.exit(1);
   }
   const rl = createInterface({ input: process.stdin, output: process.stdout });
-  const confirm = await rl.question('digite "comentar" para confirmar: ');
+  const confirm = await rl.question('type "comment" to confirm: ');
   rl.close();
-  if (confirm.trim().toLowerCase() !== "comentar") {
-    console.log("cancelado");
+  if (confirm.trim().toLowerCase() !== "comment") {
+    console.log("canceled");
     process.exit(0);
   }
 }
@@ -54,12 +54,12 @@ if (!args.includes("--yes")) {
 try {
   const result = await apiPost(`posts/${postId}/comments/add`, site ? { body, site } : { body }, accessToken);
   const comment = result.items[0];
-  console.log(`\npublicado: comentário ${comment.comment_id}`);
+  console.log(`\nposted: comment ${comment.comment_id}`);
   console.log(htmlToText(comment.body || body));
 } catch (error) {
-  console.error(`\nfalhou: ${error.message}`);
+  console.error(`\nfailed: ${error.message}`);
   if (/no_privileges|reputation/i.test(error.message)) {
-    console.error("comentar em post de terceiros exige 50 de reputação.");
+    console.error("commenting on someone else's post needs 50 reputation.");
   }
   process.exit(1);
 }

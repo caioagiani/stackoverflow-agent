@@ -1,50 +1,50 @@
-// Detector de "cheiro de LLM". Roda antes de qualquer publicação.
-// Regra do projeto: se soa como resposta de IA, não sai.
+// "LLM smell" detector. Runs before anything gets published.
+// Project rule: if it sounds like an AI answer, it doesn't ship.
 
 const BLOCK = [
-  [/\b(i )?hope (this|that) helps\b/i, "fecho de chatbot"],
-  [/\bgreat question\b/i, "puxada de saco de chatbot"],
-  [/\blet me know if\b/i, "fecho de chatbot"],
-  [/\bfeel free to\b/i, "fecho de chatbot"],
-  [/\bit'?s (important|worth) (to note|noting)\b/i, "hedge de LLM"],
-  [/\bplease note that\b/i, "hedge de LLM"],
-  [/\bkeep in mind that\b/i, "hedge de LLM"],
-  [/\bin (summary|conclusion)\b/i, "resumo final desnecessário"],
-  [/\bto summari[sz]e\b/i, "resumo final desnecessário"],
-  [/\bas an ai\b/i, "vazamento de IA"],
-  [/\bcertainly[,!]/i, "abertura de chatbot"],
-  [/\b(here'?s|below is) a (breakdown|step-by-step|detailed)\b/i, "estrutura de LLM"],
-  [/\blet'?s (break|dive|walk) (this |it )?(down|into|through)\b/i, "estrutura de LLM"],
-  [/\bi understand (that )?you'?re\b/i, "eco do enunciado"],
+  [/\b(i )?hope (this|that) helps\b/i, "chatbot sign-off"],
+  [/\bgreat question\b/i, "chatbot flattery"],
+  [/\blet me know if\b/i, "chatbot sign-off"],
+  [/\bfeel free to\b/i, "chatbot sign-off"],
+  [/\bit'?s (important|worth) (to note|noting)\b/i, "LLM hedge"],
+  [/\bplease note that\b/i, "LLM hedge"],
+  [/\bkeep in mind that\b/i, "LLM hedge"],
+  [/\bin (summary|conclusion)\b/i, "needless closing summary"],
+  [/\bto summari[sz]e\b/i, "needless closing summary"],
+  [/\bas an ai\b/i, "AI leak"],
+  [/\bcertainly[,!]/i, "chatbot opener"],
+  [/\b(here'?s|below is) a (breakdown|step-by-step|detailed)\b/i, "LLM scaffolding"],
+  [/\blet'?s (break|dive|walk) (this |it )?(down|into|through)\b/i, "LLM scaffolding"],
+  [/\bi understand (that )?you'?re\b/i, "echoes the question back"],
   [/[\u{1F300}-\u{1FAFF}\u{2700}-\u{27BF}\u{2600}-\u{26FF}]/u, "emoji"],
 ];
 
 const WARN = [
-  // Experiência fabricada: o agente não viveu nada. Só vale contar o que rodou agora.
-  [/\bin my (experience|production|setup|case)\b/i, "experiência fabricada; diga o que você testou agora"],
-  [/\bi('ve| have) (seen|run into|hit|had) this\b/i, "experiência fabricada"],
-  [/\bwe (use|ran|had) this in production\b/i, "experiência fabricada"],
-  [/\bat my (job|company|work)\b/i, "experiência fabricada"],
-  [/\blast (year|month|week) i\b/i, "experiência fabricada"],
-  // Hedge e catálogo: LLM lista tudo em vez de escolher
-  [/\bthere are (several|many|multiple|a few) ways\b/i, "escolha uma e defenda"],
-  [/\byou (might|may) want to consider\b/i, "hedge; diga o que fazer"],
-  [/\bone option would be\b/i, "hedge; diga o que fazer"],
-  [/\bit depends on your (use case|needs|requirements)\b/i, "vago; diga de que depende"],
-  [/\bdelve\b/i, "palavra-marca de LLM"],
-  [/\bleverag(e|ing)\b/i, "palavra-marca de LLM"],
-  [/\butiliz(e|ing)\b/i, 'prefira "use"'],
-  [/\bseamless(ly)?\b/i, "palavra-marca de LLM"],
-  [/\bplethora\b/i, "palavra-marca de LLM"],
-  [/\brobust\b/i, "palavra-marca de LLM"],
-  [/\bcomprehensive\b/i, "palavra-marca de LLM"],
-  [/^(furthermore|moreover|additionally)[,]/im, "conector de LLM no início de frase"],
-  [/\bthis should (work|fix|solve|do)\b/i, "chute sem explicação"],
-  [/\btry the following\b/i, "genérico"],
-  [/\byou can simply\b/i, 'condescendente; corte o "simply"'],
-  [/^[-*]\s+\*\*[^*]+\*\*\s*:/m, "bullet com negrito na frente: assinatura de LLM"],
-  [/\bin the world of\b/i, "abertura de blog"],
-  [/\bby following these steps\b/i, "fecho de tutorial"],
+  // Fabricated experience: the agent hasn't lived through anything. Only what it just ran counts.
+  [/\bin my (experience|production|setup|case)\b/i, "fabricated experience; say what you tested just now"],
+  [/\bi('ve| have) (seen|run into|hit|had) this\b/i, "fabricated experience"],
+  [/\bwe (use|ran|had) this in production\b/i, "fabricated experience"],
+  [/\bat my (job|company|work)\b/i, "fabricated experience"],
+  [/\blast (year|month|week) i\b/i, "fabricated experience"],
+  // Hedging and catalogs: an LLM lists everything instead of picking
+  [/\bthere are (several|many|multiple|a few) ways\b/i, "pick one and defend it"],
+  [/\byou (might|may) want to consider\b/i, "hedge; say what to do"],
+  [/\bone option would be\b/i, "hedge; say what to do"],
+  [/\bit depends on your (use case|needs|requirements)\b/i, "vague; say what it depends on"],
+  [/\bdelve\b/i, "LLM tell-word"],
+  [/\bleverag(e|ing)\b/i, "LLM tell-word"],
+  [/\butiliz(e|ing)\b/i, 'prefer "use"'],
+  [/\bseamless(ly)?\b/i, "LLM tell-word"],
+  [/\bplethora\b/i, "LLM tell-word"],
+  [/\brobust\b/i, "LLM tell-word"],
+  [/\bcomprehensive\b/i, "LLM tell-word"],
+  [/^(furthermore|moreover|additionally)[,]/im, "LLM connector at the start of a sentence"],
+  [/\bthis should (work|fix|solve|do)\b/i, "guess with no explanation"],
+  [/\btry the following\b/i, "generic"],
+  [/\byou can simply\b/i, 'condescending; drop the "simply"'],
+  [/^[-*]\s+\*\*[^*]+\*\*\s*:/m, "bullet led by bold text: LLM signature"],
+  [/\bin the world of\b/i, "blog opener"],
+  [/\bby following these steps\b/i, "tutorial sign-off"],
 ];
 
 export function lint(text) {
@@ -61,15 +61,15 @@ export function lint(text) {
 
   const headers = (text.match(/^#{1,6}\s/gm) || []).length;
   if (headers > 2) {
-    findings.push({ level: "warn", match: `${headers} headers`, why: "resposta de SO raramente precisa de seções" });
+    findings.push({ level: "warn", match: `${headers} headers`, why: "an SO answer rarely needs sections" });
   }
 
   const body = text.replace(/```[\s\S]*?```/g, "").replace(/`[^`]*`/g, "");
   if (body.length > 600 && !/\b\w+'(t|s|re|ll|ve|m|d)\b/i.test(body)) {
     findings.push({
       level: "warn",
-      match: "zero contrações",
-      why: "formalidade uniforme soa a máquina; use don't, it's, you're",
+      match: "zero contractions",
+      why: "uniform formality reads as machine; use don't, it's, you're",
     });
   }
 
@@ -80,17 +80,17 @@ export function lint(text) {
     if (Math.sqrt(variance) < 14) {
       findings.push({
         level: "warn",
-        match: `desvio ${Math.round(Math.sqrt(variance))}`,
-        why: "frases todas do mesmo tamanho; varie o ritmo",
+        match: `stddev ${Math.round(Math.sqrt(variance))}`,
+        why: "every sentence the same length; vary the rhythm",
       });
     }
   }
 
   if (body.length > 2200) {
-    findings.push({ level: "warn", match: `${body.length} chars de prosa`, why: "longo demais, corte" });
+    findings.push({ level: "warn", match: `${body.length} chars of prose`, why: "too long, cut it" });
   }
   if (text.trim().length < 120) {
-    findings.push({ level: "warn", match: "muito curta", why: "risco de ser sinalizada como low quality" });
+    findings.push({ level: "warn", match: "too short", why: "risks getting flagged as low quality" });
   }
 
   return findings;
@@ -98,11 +98,11 @@ export function lint(text) {
 
 export function report(findings) {
   if (!findings.length) {
-    console.log("lint: limpo");
+    console.log("lint: clean");
     return { blocked: false };
   }
   for (const f of findings) {
-    const tag = f.level === "block" ? "BLOQUEIO" : "aviso   ";
+    const tag = f.level === "block" ? "BLOCK" : "warn ";
     console.log(`${tag} "${f.match}" — ${f.why}`);
   }
   return { blocked: findings.some((f) => f.level === "block") };
