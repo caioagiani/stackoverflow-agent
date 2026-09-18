@@ -1,0 +1,22 @@
+{
+  "agent": "so-responder",
+  "statusLine": {
+    "type": "command",
+    "command": "node .claude/statusline.js"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(npm run feed:*)",
+      "Bash(npm run question:*)",
+      "Bash(npm run timeline:*)",
+      "Bash(npm run me:*)",
+      "Bash(node src/feed.js:*)",
+      "Bash(node src/question.js:*)",
+      "Bash(node src/timeline.js:*)",
+      "Bash(npm run publish -- * --preview)",
+      "Bash(npm run edit -- * --preview)",
+      "Bash(npm run vote -- * --yes)",
+      "Bash(node src/vote.js:*)"
+    ]
+  }
+}
