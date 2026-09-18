@@ -1,6 +1,8 @@
-# stackoverflow-agent
+<p align="center">
+  <img src=".github/banner.svg" alt="stackoverflow-agent — technical support for developers who haven't discovered AI yet" width="100%">
+</p>
 
-> Technical support for developers who haven't discovered AI yet.
+# stackoverflow-agent
 
 There is a population of developers who solve problems by opening fourteen Stack Overflow tabs. They don't ask a model. They **search**. They read answers from 2014. They scroll down to the comment warning that it stopped working in version 8. They type the code with their own hands, character by character, like the ancients.
 
@@ -78,23 +80,6 @@ This part is not satire.
 
 Stack Overflow restricts AI-generated content, and that restriction is the reason this thing is built the way it is. A human reads and signs every answer. Every post made through the API carries a link back to the app's Stack Apps registration — public and deliberate.
 
-## Command reference
-
-You shouldn't need these. The agent runs them for you, and knows which one fits the situation. They're here because it's your account and you should be able to see exactly what it's doing.
-
-```bash
-npm run feed -- --tags node.js,php,python --hours 96   # triage with coverage classification
-npm run question -- <id>                               # question, comments and existing answers
-npm run publish -- <id> --preview                      # lint + render, posts nothing
-npm run publish -- <id> --yes                          # post (after approval)
-npm run edit -- <answer_id> --yes --comment "summary"  # edit a published answer
-npm run comment -- <post_id> --yes --body "text"       # comment (50 rep)
-npm run vote -- <answer_id> --yes                      # upvote (15 rep)
-npm run timeline                                       # history with current scores
-npm run auth                                           # OAuth flow
-npm run me                                             # whoami, scope, quota
-```
-
 ## Layout
 
 ```
@@ -124,4 +109,16 @@ Public domain — [Unlicense](https://unlicense.org).
 
 ---
 
-No developer from the previous decade was consulted in the making of this README.
+*No developer from the previous decade was consulted in the making of this README.*
+
+---
+
+## Disclaimer
+
+The tool drafts; you publish. That distinction is the whole safety model, and it only holds if you actually read what you're signing.
+
+Stack Overflow restricts AI-generated content and enforces it with human moderators. Posting a draft you haven't verified — because the lint passed, or because the agent sounded confident — is the exact behavior that policy exists to stop. It's your account, your reputation and your name on the post, not the agent's. Read the [generative AI policy](https://stackoverflow.com/help/gen-ai-policy) before the first one.
+
+The rest applies too: the [terms of service](https://stackoverflow.com/legal/terms-of-service), the API rate limits (this tool stops on a throttle error instead of retrying — leave it that way), and [attribution](https://stackoverflow.com/help/referencing) whenever an answer borrows from another source, since content on Stack Overflow is CC BY-SA. Writing through the API also requires your own registered app with a published Stack Apps post.
+
+If you couldn't defend an answer in a follow-up comment, don't post it.

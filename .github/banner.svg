@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" width="1200" height="360" role="img" aria-label="stackoverflow-agent — technical support for developers who haven't discovered AI yet">
+  <defs>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f0883e" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#f0883e" stop-opacity="0"/>
+    </linearGradient>
+    <style>
+      .mono { font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+      .sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="360" fill="#0d1117"/>
+
+  <!-- tab strip: fourteen tabs, the answer is in the eleventh -->
+  <rect width="1200" height="58" fill="#161b22"/>
+  <g>
+    <rect x="24" y="14" width="74" height="44" rx="6" fill="#21262d"/>
+    <rect x="106" y="14" width="74" height="44" rx="6" fill="#21262d"/>
+    <rect x="188" y="14" width="74" height="44" rx="6" fill="#21262d"/>
+    <rect x="270" y="14" width="74" height="44" rx="6" fill="#21262d"/>
+    <rect x="352" y="14" width="74" height="44" rx="6" fill="#21262d"/>
+    <rect x="434" y="14" width="74" height="44" rx="6" fill="#21262d"/>
+    <rect x="516" y="14" width="74" height="44" rx="6" fill="#21262d"/>
+    <rect x="598" y="14" width="74" height="44" rx="6" fill="#21262d"/>
+    <rect x="680" y="14" width="74" height="44" rx="6" fill="#21262d"/>
+    <rect x="762" y="14" width="74" height="44" rx="6" fill="#21262d"/>
+    <!-- the eleventh -->
+    <rect x="844" y="8" width="74" height="50" rx="6" fill="#0d1117"/>
+    <rect x="844" y="8" width="74" height="3" rx="1.5" fill="#f0883e"/>
+    <rect x="926" y="14" width="74" height="44" rx="6" fill="#21262d"/>
+    <rect x="1008" y="14" width="74" height="44" rx="6" fill="#21262d"/>
+    <rect x="1090" y="14" width="74" height="44" rx="6" fill="#21262d"/>
+  </g>
+
+  <path d="M881 62 L881 78" stroke="#30363d" stroke-width="1.5"/>
+  <text class="mono" x="893" y="83" font-size="13" fill="#6e7681">the answer is in the eleventh</text>
+
+  <text class="mono" x="64" y="176" font-size="58" font-weight="600" fill="#e6edf3">stackoverflow-agent</text>
+  <rect x="64" y="198" width="420" height="2" fill="url(#glow)"/>
+
+  <text class="sans" x="64" y="248" font-size="25" fill="#adbac7">Technical support for developers who haven't discovered AI yet.</text>
+
+  <g class="mono" font-size="15">
+    <circle cx="71" cy="308" r="5" fill="#3fb950"/>
+    <text x="86" y="313" fill="#8b949e">OPEN</text>
+    <circle cx="178" cy="308" r="5" fill="#d29922"/>
+    <text x="193" y="313" fill="#8b949e">WEAK</text>
+    <circle cx="285" cy="308" r="5" fill="#8b949e"/>
+    <text x="300" y="313" fill="#8b949e">COVERED</text>
+    <text x="440" y="313" fill="#6e7681">— every answer read and signed by a human before it posts</text>
+  </g>
+</svg>
