@@ -22,39 +22,46 @@ An AI spins up a container, tests the hypothesis, measures the result and writes
 
 He'll never know. It's better this way.
 
-## How the service works
+---
 
-Every question falls into one of four paths, and the path comes before the text:
+## Setup
 
-| situation | path |
+One command, then a conversation. There are no dependencies to install.
+
+```bash
+git clone https://github.com/caioagiani/stackoverflow-agent
+```
+
+Open the folder in your coding agent and say:
+
+> set up my Stack Overflow access
+
+It walks you through the rest — registering the app on Stack Apps, filling in `.env`, running the OAuth flow, and checking that the token came back with the right scope. There are a couple of non-obvious traps in that flow (the callback page 404s and that's fine; the redirect URI has to sit under your registered domain) and the agent already knows about them.
+
+You never have to read the OAuth docs. That's the whole point.
+
+## Using it
+
+You don't run commands. You talk, and the agent runs them.
+
+| you say | it does |
 | --- | --- |
-| no answers, or the existing ones are wrong | answer |
-| already has a correct answer and we agree with it | upvote, nothing more |
-| correct answer but incomplete | upvote + comment with what's missing |
-| no repro, opinion-based, duplicate, or impossible to validate | skip |
+| "find something worth answering today" | sweeps the feed, tags each question OPEN / WEAK / COVERED, hands you a shortlist with a suggested path for each |
+| "let's take 80003500" | pulls the question with its comments and existing answers, picks a path, tests the code, drafts |
+| "check if there's more from the last 7 days" | widens the window, cross-references what you already handled |
+| "yes, post it" | posts — this is the only point where anything becomes public |
 
-A new answer is only justified when it would be the best on the page. Tying with what's already there clutters the question and earns a downvote — which would be, let's admit, ironic.
+The agent decides *whether to answer at all*, which is most of the work. Roughly four out of five questions end in "skip" or "upvote the existing answer, it's already right". A new answer only gets drafted when it would be the best on the page.
 
-```
-npm run feed -- --tags node.js,php,python --hours 96
-npm run question -- <id>
-   ↓ pick the path
-   ↓ actually test the code
-   ↓ drafts/<id>/answer.md
-npm run publish -- <id> --preview      # anti-LLM lint + render by SO itself
-   ↓ explicit human approval
-npm run publish -- <id> --yes
-```
+When it does draft one, it tests first. Real example from this repo's history: to explain why a `CAST()` made a MariaDB query 100x faster, it spun up MariaDB 11.8 in a container, recreated the 100k-row table, ran `EXPLAIN` both ways, and found the accepted answer had the cause wrong. That's the normal amount of work, not the exceptional one.
 
-## The work nobody asked for
+## Which agents this works with
 
-Two real examples, because the joke only lands if the work underneath it is serious.
+**Claude Code** — nothing to configure. The repo ships `.claude/` with a dedicated agent (`so-responder`) and three skills (`so-triage`, `so-answer`, `so-publish`) that load themselves when they're relevant. Read commands are pre-approved in `.claude/settings.json`; the ones that write to Stack Overflow deliberately are not.
 
-**Why a `CAST()` made a MariaDB query 100x faster.** The accepted answer said it was the server character set. The question author tested it and it wasn't. So: we spun up MariaDB 11.8 in a container, recreated the 100k-row table, ran `EXPLAIN` with and without `CAST`, and found the culprit wasn't the `CAST` — it was the `?`. A single prepared-statement placeholder is enough to stop the optimizer from pushing the condition into the materialized view. Confirmed by turning `condition_pushdown_for_derived` off and watching both versions get equally slow.
+**Codex, Cursor, Gemini CLI, and anything else that reads a project instruction file** — `AGENTS.md` at the root covers it. Same rules, same commands, no skills.
 
-**Whether `atexit` can close a database connection in WSGI.** It can't. We sent `SIGTERM` to a real Python process to find out. `atexit` runs on Ctrl+C and does not run on `SIGTERM` — which is exactly the signal Apache uses to stop a worker.
-
-In both cases the investigation took longer than the author spent writing the question. Someone will copy the code block without reading the paragraph that explains why. That's fine.
+**Anything else** — the CLI underneath is plain Node with no runtime dependencies, so any agent that can run a shell command can drive it. Point it at `AGENTS.md` and `kb/`.
 
 ## What it does not do
 
@@ -69,18 +76,11 @@ This part is not satire.
 > If an answer only exists because the API managed to post it, it shouldn't exist.
 > — `kb/so-rules.md`
 
-## Install
+Stack Overflow restricts AI-generated content, and that restriction is the reason this thing is built the way it is. A human reads and signs every answer. Every post made through the API carries a link back to the app's Stack Apps registration — public and deliberate.
 
-```bash
-npm install
-cp .env.example .env     # SO_CLIENT_ID, SO_KEY, SO_SITE, SO_REDIRECT_URI
-npm run auth             # OAuth implicit flow, scope write_access,no_expiry
-npm run me               # check token and reputation
-```
+## Command reference
 
-Writing through the API requires a registered app with a published Stack Apps post. Every post created through it carries a link back to that registration — public and deliberate.
-
-## Commands
+You shouldn't need these. The agent runs them for you, and knows which one fits the situation. They're here because it's your account and you should be able to see exactly what it's doing.
 
 ```bash
 npm run feed -- --tags node.js,php,python --hours 96   # triage with coverage classification
@@ -91,11 +91,17 @@ npm run edit -- <answer_id> --yes --comment "summary"  # edit a published answer
 npm run comment -- <post_id> --yes --body "text"       # comment (50 rep)
 npm run vote -- <answer_id> --yes                      # upvote (15 rep)
 npm run timeline                                       # history with current scores
+npm run auth                                           # OAuth flow
+npm run me                                             # whoami, scope, quota
 ```
 
 ## Layout
 
 ```
+AGENTS.md         instructions for any coding agent
+CLAUDE.md         same, for Claude Code
+.claude/          dedicated agent + skills + permissions
+kb/               voice, SO rules, per-language patterns
 src/auth.js       OAuth implicit flow, stores the token
 src/client.js     REST 2.3 client, backoff, filters
 src/feed.js       triage, tags each question OPEN / WEAK / COVERED
@@ -106,7 +112,6 @@ src/edit.js       edits a published answer
 src/comment.js    comments on a question or an answer
 src/vote.js       upvote and undo
 src/timeline.js   history with current scores, writes TIMELINE.md
-kb/               voice, SO rules, per-language patterns
 drafts/<id>/      question.md, answer.md, posted.json
 answers.jsonl     append-only log of what was posted
 ```
